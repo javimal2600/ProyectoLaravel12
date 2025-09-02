@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class PostController extends Controller
     public function index()
     {
         //
-        $posts = Post::paginate();
+        $posts = Post::latest('id')->paginate();
         return view('admin.posts.index',compact('posts'));
     }
 
@@ -24,7 +25,9 @@ class PostController extends Controller
     public function create()
     {
         //
-        return view('admin.posts.create');
+        $categories = Category::all();
+
+        return view('admin.posts.create', compact('categories'));
     }
 
     /**
@@ -33,6 +36,23 @@ class PostController extends Controller
     public function store(Request $request)
     {
         //
+        $data = $request->validate([
+            'title' => 'required|max:255',
+            'slug' => 'required|unique:posts,slug',
+            'category_id' => 'required|exists:categories,id'
+        ]);
+
+        $data['user_id'] = auth()->id();
+
+        $post = Post::create($data);
+        
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Post creado',
+            'text' => 'El post se creo con exito'
+        ]);
+
+        return redirect()->route('admin.posts.edit', $post);
     }
 
     /**
@@ -50,7 +70,9 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         //
-        return view('admin.posts.edit', compact('post'));
+
+        $categories = Category::all();
+        return view('admin.posts.edit', compact('post','categories'));
     }
 
     /**
@@ -59,6 +81,24 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         //
+        $data = $request->validate([
+            'title' => 'required|max:255',
+            'slug' => 'required|string|max:255|unique:posts,slug,'.$post->id,
+            'category_id' => 'required|exists:categories,id',
+            'excerpt' => 'required_if:is_published,1|string',
+            'content' => 'required_if:is_published,1|string',
+            'is_published' => 'boolean'
+        ]);
+
+        $post->update($data);
+
+        session()->flash('swal', [
+            'icon' => 'success',
+            'title' => 'Post actualizado',
+            'text' => 'El post se actualizo con exito'
+        ]);
+
+        return redirect()->route('admin.posts.edit', $post);
     }
 
     /**
