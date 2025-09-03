@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -70,9 +71,13 @@ class PostController extends Controller
     public function edit(Post $post)
     {
         //
+        // $tags= $post->tags->pluck('id')->toArray();
+        // $response= in_array($post->status,$tags);
+        // dd($response);
 
+        $tags = Tag::all();
         $categories = Category::all();
-        return view('admin.posts.edit', compact('post','categories'));
+        return view('admin.posts.edit', compact('post','categories','tags'));
     }
 
     /**
@@ -81,16 +86,26 @@ class PostController extends Controller
     public function update(Request $request, Post $post)
     {
         //
+
         $data = $request->validate([
             'title' => 'required|max:255',
             'slug' => 'required|string|max:255|unique:posts,slug,'.$post->id,
             'category_id' => 'required|exists:categories,id',
             'excerpt' => 'required_if:is_published,1|string',
             'content' => 'required_if:is_published,1|string',
+            'tags' => 'array',
             'is_published' => 'boolean'
         ]);
 
+
         $post->update($data);
+
+        $tags = [];
+        foreach($request->tags ?? [] as $tag){
+            $tags[]= Tag::firstOrCreate(['name' => $tag]);
+        }
+
+        $post->tags()->sync($tags);
 
         session()->flash('swal', [
             'icon' => 'success',
