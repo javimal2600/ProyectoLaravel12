@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -89,7 +91,16 @@ class PostController extends Controller
 
         $data = $request->validate([
             'title' => 'required|max:255',
-            'slug' => 'required|string|max:255|unique:posts,slug,'.$post->id,
+            // 'slug' => 'required|string|max:255|unique:posts,slug,'.$post->id,
+            'slug'=>[
+                Rule::requiredIf(function() use ($post){
+                    return !$post->published_at;
+                }),
+                'string',
+                'max:255',
+                Rule::unique('posts')->ignore($post->id),
+            ],
+            'image' => 'nullable|image|max:2048',
             'category_id' => 'required|exists:categories,id',
             'excerpt' => 'required_if:is_published,1|string',
             'content' => 'required_if:is_published,1|string',
@@ -97,6 +108,12 @@ class PostController extends Controller
             'is_published' => 'boolean'
         ]);
 
+        if($request->hasFile('image')){
+            if($post->image_path){
+                Storage::delete($post->image_path);
+            }
+                $data['image_path'] = Storage::put('posts',$request->image);
+        }
 
         $post->update($data);
 

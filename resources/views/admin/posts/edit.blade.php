@@ -17,12 +17,13 @@
         </flux:breadcrumbs>
     </div>
 
-    <form action="{{route('admin.posts.update',$post)}}" method="POST" >    
+    <form action="{{route('admin.posts.update',$post)}}" method="POST" enctype="multipart/form-data">    
+
         @csrf
         @method('PUT')
 
         <div class="relative mb-2">
-            <img id="imgPreview" class="w-full aspect-video object-cover object-center"  src="https://thumb.ac-illust.com/b1/b170870007dfa419295d949814474ab2_t.jpeg" alt="">
+            <img id="imgPreview" class="w-full aspect-video object-cover object-center"  src="{{$post->image_path ? Storage::url($post->image_path) : 'https://thumb.ac-illust.com/b1/b170870007dfa419295d949814474ab2_t.jpeg'}}" alt="">
             <div class="absolute top-8 right-8">
                     <label class="bg-white px-4 py-2 rounded-lg cursor-pointer">Cambiar Imagen
                         <input class="hidden" type="file" name="image" accept="=image/*" onchange="preview_Image(event, '#imgPreview')">
@@ -33,7 +34,9 @@
 
         <div class="bg-white px-6 py-8 rounded-lg shadow-lg space-y-4">
                 <flux:input name="title" label="Titulo" value="{{old('title',$post->title)}}"/>
-                <flux:input name="slug" label="Slug" value="{{old('slug',$post->slug)}}"/>
+                @if (!$post->published_at)
+                    <flux:input name="slug" label="Slug" value="{{old('slug',$post->slug)}}"/>
+                @endif
                 <flux:select label="Categoria" name="category_id" >
                     @foreach($categories as $category)
                         <flux:select.option value="{{$category->id}}" :selected="$category->id == old('category_id', $post->category_id)">
