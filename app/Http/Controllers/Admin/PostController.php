@@ -9,9 +9,18 @@ use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Routing\Controllers\Middleware;//revisar que sea la correacta
+use Illuminate\Routing\Controllers\HasMiddleware;//revisar que sea la correcta
 
-class PostController extends Controller
+class PostController extends Controller implements HasMiddleware
 {
+
+    public static function middleware()
+    {
+        return [
+            new Middleware('can:manage posts')
+        ];
+    }
     /**
      * Display a listing of the resource.
      */

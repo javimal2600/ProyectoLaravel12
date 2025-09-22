@@ -5,9 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\category;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\Middleware;//revisar que sea la correacta
+use Illuminate\Routing\Controllers\HasMiddleware;//revisar que sea la correcta
 
-class CategoryController extends Controller
+class CategoryController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [
+            new Middleware('can:manage categories')
+        ];
+    }
     /**
      * Display a listing of the resource.
      */

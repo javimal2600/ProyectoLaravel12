@@ -71,7 +71,9 @@
                         <flux:menu.separator />
 
                         <flux:menu.radio.group>
+                        @can('access dashboard')
                             <flux:menu.item :href="route('admin.dashboard')" icon="key" wire:navigate>{{ __('Admin') }}</flux:menu.item>
+                        @endcan
                             <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                         </flux:menu.radio.group>
 

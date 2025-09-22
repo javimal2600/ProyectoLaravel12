@@ -5,9 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Routing\Controllers\Middleware;//revisar que sea la correacta
+use Illuminate\Routing\Controllers\HasMiddleware;//revisar que sea la correcta
 
-class PermissionController extends Controller
+class PermissionController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [
+            new Middleware('can:manage permissions')
+        ];
+    }
     /**
      * Display a listing of the resource.
      */

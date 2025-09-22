@@ -6,9 +6,17 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Routing\Controllers\Middleware;//revisar que sea la correacta
+use Illuminate\Routing\Controllers\HasMiddleware;//revisar que sea la correcta
 
-class RoleController extends Controller
+class RoleController extends Controller implements HasMiddleware
 {
+    public static function middleware()
+    {
+        return [
+            new Middleware('can:manage roles')
+        ];
+    }
     /**
      * Display a listing of the resource.
      */
