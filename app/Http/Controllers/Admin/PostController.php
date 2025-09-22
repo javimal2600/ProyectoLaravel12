@@ -112,7 +112,13 @@ class PostController extends Controller
             if($post->image_path){
                 Storage::delete($post->image_path);
             }
+                $extension =$request->image->extension();
+                $nameFile = $post->slug . '.' . $extension;
+                while(Storage::exists('posts/'.$nameFile)){
+                    $nameFile = str_replace('.'.$extension,'-copia.'.$extension ,$nameFile);
+                }
                 $data['image_path'] = Storage::put('posts',$request->image);
+                
         }
 
         $post->update($data);

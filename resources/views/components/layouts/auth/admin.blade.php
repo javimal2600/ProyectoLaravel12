@@ -34,6 +34,8 @@
                     <flux:navlist.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
                     <flux:navlist.item icon="arrow-up-on-square" :href="route('admin.categories.index')" :current="request()->routeIs('admin.categories.*')" wire:navigate>Categorías</flux:navlist.item>
                     <flux:navlist.item icon="book-open" :href="route('admin.posts.index')" :current="request()->routeIs('admin.posts.*')" wire:navigate>Post</flux:navlist.item>
+                    <flux:navlist.item icon="key" :href="route('admin.permissions.index')" :current="request()->routeIs('admin.permissions.*')" wire:navigate>Permisos</flux:navlist.item>
+                    <flux:navlist.item icon="lock-open" :href="route('admin.roles.index')" :current="request()->routeIs('admin.roles.*')" wire:navigate>Roles</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
